@@ -18,11 +18,27 @@ class Task {
   @HiveField(3)
   final String status;
 
+  @HiveField(4)
+  final String? imagePath;
+
+  @HiveField(5)
+  final int? createdAt;
+
+  @HiveField(6)
+  final String? category;
+
+  @HiveField(7)
+  final int? dueAt;
+
   Task({
     this.id,
     required this.title,
     required this.description,
     required this.status,
+    this.imagePath,
+    this.createdAt,
+    this.category,
+    this.dueAt,
   });
 
   Task copyWith({
@@ -30,12 +46,20 @@ class Task {
     String? title,
     String? description,
     String? status,
+    String? imagePath,
+    int? createdAt,
+    String? category,
+    int? dueAt,
   }) {
     return Task(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
       status: status ?? this.status,
+      imagePath: imagePath ?? this.imagePath,
+      createdAt: createdAt ?? this.createdAt,
+      category: category ?? this.category,
+      dueAt: dueAt ?? this.dueAt,
     );
   }
 

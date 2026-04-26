@@ -9,15 +9,31 @@ import 'package:todo_with_resfulapi/widgets/dialog_widget_completed_screen.dart'
 class CompletedTaskItemWidget extends StatelessWidget {
   final Task task;
   final TaskProvider taskProvider;
+  final bool showDashed;
 
   const CompletedTaskItemWidget({
     super.key,
     required this.task,
     required this.taskProvider,
+    this.showDashed = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final titleStyle = AppTextStyle.textFontSM13W600.copyWith(
+      color: AppColorsPath.sunburn,
+      decoration: showDashed ? TextDecoration.lineThrough : TextDecoration.none,
+      decorationColor: AppColorsPath.sunburn,
+      decorationThickness: 1.5,
+    );
+
+    final descStyle = AppTextStyle.textFontR10W400.copyWith(
+      color: AppColorsPath.black,
+      decoration: showDashed ? TextDecoration.lineThrough : TextDecoration.none,
+      decorationColor: AppColorsPath.sunburn,
+      decorationThickness: 1.2,
+    );
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -64,17 +80,22 @@ class CompletedTaskItemWidget extends StatelessWidget {
               children: [
                 AppText(
                   title: task.title,
-                  style: AppTextStyle.textFontSM13W600.copyWith(
-                    color: AppColorsPath.lavender,
-                    decoration: TextDecoration.lineThrough,
-                  ),
+                  style: titleStyle,
                 ),
+
                 if (task.description.isNotEmpty)
                   AppText(
                     title: task.description,
-                    style: AppTextStyle.textFontR10W400.copyWith(
-                      color: AppColorsPath.black,
-                      decoration: TextDecoration.lineThrough,
+                    style: descStyle,
+                  ),
+
+                // timestamp (created or due)
+                if (task.createdAt != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6.0),
+                    child: Text(
+                      _formatTimestamp(task.createdAt!),
+                      style: TextStyle(fontSize: 11, color: AppColorsPath.grey),
                     ),
                   ),
 
@@ -119,16 +140,10 @@ class CompletedTaskItemWidget extends StatelessWidget {
             ),
           ),
 
-          // Action Buttons
+          // Action Buttons - delete icon removed; undo & completed indicator remain
           IconButton(
             onPressed: () => _showUndoConfirmDialog(context),
-            icon: Icon(Icons.undo, color: AppColorsPath.warningOrange),
-            visualDensity: VisualDensity.compact,
-          ),
-
-          IconButton(
-            onPressed: () => _showDeleteConfirmDialog(context),
-            icon: Icon(Icons.delete, color: AppColorsPath.errorRed),
+            icon: Icon(Icons.undo_rounded, color: AppColorsPath.warningOrange),
             visualDensity: VisualDensity.compact,
           ),
 
@@ -136,6 +151,15 @@ class CompletedTaskItemWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _formatTimestamp(int ms) {
+    final dt = DateTime.fromMillisecondsSinceEpoch(ms);
+    final day = dt.day.toString().padLeft(2, '0');
+    final month = dt.month.toString().padLeft(2, '0');
+    final hour = dt.hour.toString().padLeft(2, '0');
+    final minute = dt.minute.toString().padLeft(2, '0');
+    return '$day/$month $hour:$minute';
   }
 
   // Show undo confirmation dialog

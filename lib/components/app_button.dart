@@ -17,27 +17,33 @@ class AppButton extends StatelessWidget {
     this.width,
     this.textStyle,
     this.color,
-    this.borderRadius = 59,
+    this.borderRadius = 12,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: (width ?? (65 / 414) * size.width),
-        height: (65 / 414) * size.width,
-        decoration: BoxDecoration(
-          color: color ?? AppColorsPath.lavender,
-          borderRadius: BorderRadius.circular(borderRadius),
-        ),
-        child: Center(
-          child: AppText(
-            title: content,
-            style: textStyle ?? AppTextStyle.textFontSM20W600,
+    final double btnHeight = 48.0;
+    final double btnWidth = width ?? (size.width * 0.9);
+
+    return SizedBox(
+      width: btnWidth,
+      height: btnHeight,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color ?? AppColorsPath.sunburn,
+          foregroundColor: AppColorsPath.white,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+        ),
+        child: AppText(
+          title: content,
+          style: textStyle ?? AppTextStyle.textFontM17W500,
         ),
       ),
     );

@@ -63,6 +63,33 @@ class StorageService {
     }
   }
 
+  // add task local with optional imagePath
+  Future<Task> addTaskLocalWithImage(String title, String description, String? imagePath, {String? category, int? dueAt}) async {
+    try {
+      final taskId = 'local_${DateTime.now().microsecondsSinceEpoch}';
+      // Create a new task
+      final newTask = Task(
+        id: taskId,
+        title: title,
+        description: description,
+        status: 'pendiente',
+        imagePath: imagePath,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        category: category,
+        dueAt: dueAt,
+      );
+      // save task to hive
+      await _taskBox.put(taskId, newTask);
+      // add to sync queue for sync later
+      await _addToSyncQueue('create', newTask);
+      debugPrint('task added Locally with image: $title');
+      return newTask;
+    } catch (e) {
+      debugPrint('Error adding task locally: $e');
+      throw Exception('Failed to add task locally: $e');
+    }
+  }
+
   // edit task local when offline
   Future<Task> editTaskLocal(Task updateTask) async {
     try {

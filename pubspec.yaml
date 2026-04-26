@@ -13,6 +13,12 @@ dependencies:
   # State Management
   provider: ^6.1.1
 
+  # Firebase
+  firebase_core: ^2.20.0
+  firebase_auth: ^4.8.0
+  image_picker: ^0.8.7+5
+  google_sign_in: ^6.1.0
+
   # Local Database
   hive: ^2.2.3
   hive_flutter: ^1.1.0
@@ -39,3 +45,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - images/

@@ -12,34 +12,31 @@ class BottomNavBarWidget extends StatelessWidget {
     return Container(
       height: (68 / 896) * MediaQuery.of(context).size.height,
       decoration: BoxDecoration(color: AppColorsPath.white),
-      padding: const EdgeInsets.symmetric(horizontal: 91, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
-            onTap:
-                () => Navigator.pushNamed(context, AppRoutes.homeScreenRouter),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.list_alt, color: AppColorsPath.lavender, size: 30),
-                AppText(title: 'All', style: AppTextStyle.textFontR10W400),
-              ],
+            onTap: () => Navigator.pushNamed(
+              context,
+              AppRoutes.completedTaskScreenRouter,
             ),
-          ),
-          GestureDetector(
-            onTap:
-                () => Navigator.pushNamed(
-                  context,
-                  AppRoutes.completedTaskScreenRouter,
-                ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check, color: AppColorsPath.lavender, size: 30),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColorsPath.sunburn.withOpacity(0.08),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.check, color: AppColorsPath.sunburn, size: 26),
+                ),
                 AppText(
                   title: 'Completed',
-                  style: AppTextStyle.textFontR10W400,
+                  style: AppTextStyle.textFontR10W400.copyWith(
+                    color: Colors.grey,
+                  ),
                 ),
               ],
             ),

@@ -7,6 +7,10 @@ class TaskProvider extends ChangeNotifier {
   final TaskRepository _taskRepository = TaskRepository();
 
   List<Task> _tasks = [];
+  // Filtering & sorting
+  String _filterStatus = 'pendiente'; // changed default from 'all' to 'pendiente'
+  String? _filterCategory;
+  String _sortOption = 'created_desc';
   bool _isLoading = false;
   String _errorMessage = '';
   bool _isOnline = true;
@@ -15,6 +19,34 @@ class TaskProvider extends ChangeNotifier {
 
   // Getters
   List<Task> get tasks => _tasks;
+  List<Task> get visibleTasks {
+    var list = List<Task>.from(_tasks);
+
+    // Apply status filter
+    if (_filterStatus != 'all') {
+      list = list.where((t) => t.status == _filterStatus).toList();
+    }
+
+    // Apply category filter
+    if (_filterCategory != null && _filterCategory!.isNotEmpty) {
+      list = list.where((t) => t.category == _filterCategory).toList();
+    }
+
+    // Apply sorting
+    switch (_sortOption) {
+      case 'title_asc':
+        list.sort((a, b) => a.title.compareTo(b.title));
+        break;
+      case 'created_asc':
+        list.sort((a, b) => (a.createdAt ?? 0).compareTo(b.createdAt ?? 0));
+        break;
+      case 'created_desc':
+      default:
+        list.sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
+    }
+
+    return list;
+  }
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   bool get isOnline => _isOnline;
@@ -23,7 +55,7 @@ class TaskProvider extends ChangeNotifier {
 
   /// Getters for filtered tasks
   List<Task> get pendingTasks =>
-      _tasks.where((task) => task.isPending).toList();
+    _tasks.where((task) => task.isPending).toList();
   List<Task> get completedTasks =>
       _tasks.where((task) => task.isCompleted).toList();
   int get totalTasks => _tasks.length;
@@ -42,6 +74,26 @@ class TaskProvider extends ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  /// Set filter and sort options
+  void setFilterStatus(String status) {
+    _filterStatus = status;
+    notifyListeners();
+  }
+
+  void setFilterCategory(String? category) {
+    _filterCategory = category;
+    notifyListeners();
+  }
+
+  void setSortOption(String option) {
+    _sortOption = option;
+    notifyListeners();
+  }
+
+  String get currentSortOption => _sortOption;
+
+  String get currentFilterStatus => _filterStatus;
 
   /// Get all tasks from Repository
   Future<void> getAllTasks() async {
@@ -63,15 +115,21 @@ class TaskProvider extends ChangeNotifier {
   }
 
   /// Create new task
-  Future<void> createTask(String title, String description) async {
+  Future<void> createTask(String title, String description, {String? imagePath, String? category, int? dueAt}) async {
     try {
       _clearError();
       _setLoading(true);
 
-      final newTask = await _taskRepository.createTask(title, description);
+  final newTask = await _taskRepository.createTask(
+        title,
+        description,
+        imagePath: imagePath,
+        category: category,
+        dueAt: dueAt,
+      );
 
       // Add new task to local list (for immediate UI update)
-      _tasks.add(newTask);
+  _tasks.add(newTask);
       await _updatePendingSyncCount();
 
       debugPrint('Task created successfully: ${newTask.title}');
